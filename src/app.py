@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Person, Planet, Vehicle
 #from models import Person
 
 app = Flask(__name__)
@@ -36,11 +36,79 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
-
+@app.route('/users', methods=['GET'])
+def get_all_user():
+    users_query = User.query.all()
+    users_data = list(map(lambda item: item.serialize(), users_query))
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "msg": "ok",
+        "users": users_data
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/persons', methods=['GET'])
+def get_all_persons():
+    persons_query = Person.query.all()
+    persons_data = list(map(lambda item: item.serialize(), persons_query))
+    response_body = {
+        "msg": "ok",
+        "persons": persons_data
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/persons/<int:id>', methods=['GET'])
+def person(id):
+    person_query = Person.query.filter_by(id = id).first()
+    person_data = person_query.serialize()
+    response_body = {
+        "msg": "ok",
+        "person": person_data
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/planets', methods=['GET'])
+def get_all_planet():
+    planet_query = Planet.query.all()
+    planet_data = list(map(lambda item: item.serialize(), planet_query))
+    response_body = {
+        "msg": "ok",
+        "planets": planet_data
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/planets/<int:id>', methods=['GET'])
+def planet(id):
+    planet_query = Planet.query.filter_by(id = id).first()
+    planet_data = planet_query.serialize()
+    response_body = {
+        "msg": "ok",
+        "person": planet_data
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/vehicles', methods=['GET'])
+def get_all_vehicle():
+    vehicle_query = Vehicle.query.all()
+    vehicle_data = list(map(lambda item: item.serialize(), vehicle_query))
+    response_body = {
+        "msg": "ok",
+        "vehicles": vehicle_data
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/vehicles/<int:id>', methods=['GET'])
+def vehicle(id):
+    vehicle_query = Vehicle.query.filter_by(id = id).first()
+    vehicle_data = vehicle_query.serialize()
+    response_body = {
+        "msg": "ok",
+        "person": vehicle_data
     }
 
     return jsonify(response_body), 200
