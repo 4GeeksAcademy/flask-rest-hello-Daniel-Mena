@@ -50,8 +50,8 @@ class Person(db.Model):
     height = db.Column(db.String(250), nullable=True)
     eye_color = db.Column(db.String(250), nullable=True)
     hair_color = db.Column(db.String(250), nullable=True)
-    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'), nullable=False)
-    vehicles = db.relationship('Vehicle', backref='person')
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'), nullable=True)
+    vehicles = db.relationship('Vehicle', backref='person', lazy=True)
     favourites = db.relationship('Favourite', backref='person', lazy=True)
 
     def __repr__(self):
@@ -76,7 +76,7 @@ class Vehicle(db.Model):
     length = db.Column(db.String(250), nullable=True)
     manufacturer = db.Column(db.String(250), nullable=True)
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
-    # favourites = db.relationship('Favourite', backref='vehicle', lazy=True)
+    favourites = db.relationship('Favourite', backref='vehicle', lazy=True)
 
     def __repr__(self):
         return '<Vehicle %r>' % self.id
@@ -102,11 +102,28 @@ class Favourite(db.Model):
         return '<Favourite %r>' % self.id
 
     def serialize(self):
-        return {
+        person = Person.query.filter_by(id = self.person_id).first()
+        planet = Planet.query.filter_by(id = self.planet_id).first()
+        vehicle = Vehicle.query.filter_by(id = self.vehicle_id).first()
+        if self.person_id is not None:
+            return {
             "id": self.id,
             "user_id": self.user_id,
-            # "person_id": self.person_id,
-            # "planet_id": self.planet_id,
-            # "vehicle_id": self.vehicle_id,
+            "info_person": person.serialize(),
             # do not serialize the password, its a security breach
         }
+        elif self.planet_id is not None:
+            return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "info_planet": planet.serialize(),
+            # do not serialize the password, its a security breach
+        }
+        else:
+            return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "info_vehicle": vehicle.serialize(),
+            # do not serialize the password, its a security breach
+        }
+      
