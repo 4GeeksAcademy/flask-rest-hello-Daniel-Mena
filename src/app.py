@@ -60,7 +60,7 @@ def get_all_persons():
 
     return jsonify(response_body), 200
 
-# GET para mostrar un usuario
+# GET para mostrar un personaje
 @app.route('/persons/<int:id>', methods=['GET'])
 def person(id):
     person_query = Person.query.filter_by(id = id).first()
@@ -182,6 +182,29 @@ def Delete_one_vehicle_favoutite(user_id, vehicle_id):
     db.session.commit()
     return jsonify("Vehiculo favorito eliminado"), 200
 
+# PUT Actualizar personaje
+@app.route('/persons/<int:id>', methods=['PUT'])
+def update_person(id):
+    person_query = Person.query.filter_by(id = id).first()
+    body = request.get_json()
+    # print(person_query.name)
+    if "name" in body:
+        person_query.name = body["name"]
+    if "height" in body:
+        person_query.height = body["height"]
+    if "eye_color" in body:
+        person_query.eye_color = body["eye_color"]
+    if "hair_color" in body:
+        person_query.hair_color = body["hair_color"]
+    if "planet_id" in body:
+        person_query.planet_id = body["planet_id"]   
+    db.session.commit()
+    response_body = {
+        "msg": "ok",
+        "person update": body
+    }
+
+    return jsonify(response_body), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':

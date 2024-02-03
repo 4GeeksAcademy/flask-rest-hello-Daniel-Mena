@@ -53,17 +53,20 @@ class Person(db.Model):
     planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'), nullable=True)
     vehicles = db.relationship('Vehicle', backref='person', lazy=True)
     favourites = db.relationship('Favourite', backref='person', lazy=True)
+    
 
     def __repr__(self):
         return '<Person %r>' % self.id
 
     def serialize(self):
+        planet = Planet.query.filter_by(id = self.planet_id).first()
         return {
             "id": self.id,
             "name": self.name,
             "height": self.height,
             "eye_color": self.eye_color,
             "hair_color": self.hair_color,
+            "planet of birth": planet.serialize()
             
             # do not serialize the password, its a security breach
         }
@@ -82,12 +85,14 @@ class Vehicle(db.Model):
         return '<Vehicle %r>' % self.id
 
     def serialize(self):
+        person = Person.query.filter_by(id = self.person_id).first()
         return {
             "id": self.id,
             "name": self.name,
             "model": self.model,
             "length": self.length,
             "manufacturer": self.manufacturer,
+            "driver": person.serialize(),
             # do not serialize the password, its a security breach
         }
 
