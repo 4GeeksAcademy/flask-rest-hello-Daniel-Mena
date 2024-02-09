@@ -7,8 +7,8 @@ class User(db.Model):
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    # is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    # favourites = db.relationship('Favourite', backref='user', lazy=True)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    favourites = db.relationship('Favourite', backref='user', lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.id
@@ -32,8 +32,8 @@ class Planet(db.Model):
     terrain = db.Column(db.String(250), nullable=True)
     orbital_period = db.Column(db.String(250), nullable=True)
     rotation_period = db.Column(db.String(250), nullable=True)
-    # persons = db.relationship('Person', backref='planet', lazy=True)
-    # favourites = db.relationship('Favourite', backref='planet', lazy=True)
+    persons = db.relationship('Person', backref='planet', lazy=True)
+    favourites = db.relationship('Favourite', backref='planet', lazy=True)
 
     def __repr__(self):
         return '<Planet %r>' % self.id
@@ -65,16 +65,16 @@ class Person(db.Model):
     eye_color = db.Column(db.String(250), nullable=True)
     hair_color = db.Column(db.String(250), nullable=True)
     skin_color = db.Column(db.String(250), nullable=True)
-    # planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'), nullable=True)
-    # vehicles = db.relationship('Vehicle', backref='person', lazy=True)
-    # favourites = db.relationship('Favourite', backref='person', lazy=True)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'), nullable=True)
+    vehicles = db.relationship('Vehicle', backref='person', lazy=True)
+    favourites = db.relationship('Favourite', backref='person', lazy=True)
     
 
     def __repr__(self):
         return '<Person %r>' % self.id
 
     def serialize(self):
-        # planet = Planet.query.filter_by(id = self.planet_id).first()
+        planet = Planet.query.filter_by(id = self.planet_id).first()
         return {
             "id": self.id,
             "name": self.name,
@@ -86,7 +86,7 @@ class Person(db.Model):
             "eye_color": self.eye_color,
             "hair_color": self.hair_color,
             "skin_color": self.skin_color,
-            # "planet of birth": planet.serialize()
+            "planet of birth": planet.serialize()
             
             # do not serialize the password, its a security breach
         }
@@ -103,14 +103,14 @@ class Vehicle(db.Model):
     cargo_capacity = db.Column(db.String(250), nullable=True)
     crew = db.Column(db.String(250), nullable=True)
     max_atmosphering_speed = db.Column(db.String(250), nullable=True)
-    # person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
     favourites = db.relationship('Favourite', backref='vehicle', lazy=True)
 
     def __repr__(self):
         return '<Vehicle %r>' % self.id
 
     def serialize(self):
-        # person = Person.query.filter_by(id = self.person_id).first()
+        person = Person.query.filter_by(id = self.person_id).first()
         return {
             "id": self.id,
             "name": self.name,
@@ -122,7 +122,7 @@ class Vehicle(db.Model):
             "cargo_capacity": self.cargo_capacity,
             "crew": self.crew,
             "max_atmosphering_speed": self.max_atmosphering_speed,
-            # "driver": person.serialize(),
+            "driver": person.serialize(),
             # do not serialize the password, its a security breach
         }
 
