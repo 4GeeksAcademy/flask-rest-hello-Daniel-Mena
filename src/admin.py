@@ -8,8 +8,8 @@ def setup_admin(app):
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
     admin = Admin(app, name='4Geeks Admin', template_mode='bootstrap3')
     class My_favourites_views(ModelView):
-        column_list = ('id', 'user_id', 'person_id', 'planet_id', 'vehicle_id')
-        form_columns = ('user_id', 'person_id', 'planet_id', 'vehicle_id')
+        column_list = ('id', 'user_id', 'url', 'person_id',  'planet_id', 'vehicle_id')
+        form_columns = ('user_id', 'url', 'person_id', 'planet_id', 'vehicle_id')
         can_create = True
     
     # Add your models here, for example this is how we add a the User model to the admin

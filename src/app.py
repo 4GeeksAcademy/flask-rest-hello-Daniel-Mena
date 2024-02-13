@@ -176,9 +176,10 @@ def get_all_favourites():
 @app.route('/user/favorites/persons/<int:person_id>', methods=['POST'])
 @jwt_required()
 def Create_one_people_favoutite(person_id):
+    url = request.json.get("url", None)
     current_user = get_jwt_identity()
     user_query = User.query.filter_by(email = current_user).first()
-    new_person_favourite = Favourite(user_id = user_query.id, person_id = person_id)
+    new_person_favourite = Favourite(user_id = user_query.id, url = url, person_id = person_id)
     db.session.add(new_person_favourite)
     db.session.commit()
     return jsonify("Personaje favorito añadido"), 200
@@ -187,9 +188,10 @@ def Create_one_people_favoutite(person_id):
 @app.route('/user/favorites/planets/<int:planet_id>', methods=['POST'])
 @jwt_required()
 def Create_one_planet_favoutite(planet_id):
+    url = request.json.get("url", None)
     current_user = get_jwt_identity()
     user_query = User.query.filter_by(email = current_user).first()
-    new_planet_favourite = Favourite(user_id = user_query.id, planet_id = planet_id)
+    new_planet_favourite = Favourite(user_id = user_query.id, url = url, planet_id = planet_id)
     db.session.add(new_planet_favourite)
     db.session.commit()
     return jsonify("Planeta favorito añadido"), 200
@@ -204,6 +206,17 @@ def Create_one_vehicle_favoutite(vehicle_id):
     db.session.add(new_vehicle_favourite)
     db.session.commit()
     return jsonify("Vehiculo favorito añadido"), 200
+
+# DELETE Eliminar favorito
+@app.route('/user/favorites/<int:id>', methods=['DELETE'])
+@jwt_required()
+def Delete_one_favoutite(id):
+    current_user = get_jwt_identity()
+    user_query = User.query.filter_by(email = current_user).first()
+    delete_person_favourite = Favourite.query.filter_by(user_id=user_query.id, id=id).first()
+    db.session.delete(delete_person_favourite)
+    db.session.commit()
+    return jsonify("Elemento favorito eliminado"), 200
 
 # DELETE Eliminar persona favorita
 @app.route('/user/favorites/persons/<int:person_id>', methods=['DELETE'])
